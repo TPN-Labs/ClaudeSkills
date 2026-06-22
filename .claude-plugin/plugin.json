@@ -1,0 +1,15 @@
+{
+  "name": "tpn-labs-skills",
+  "displayName": "TPN Labs — Skills",
+  "version": "0.1.0",
+  "description": "Curated Agent Skills used day-to-day at TPN Labs — clarify, dependabot-pr-fixer, and more.",
+  "author": {
+    "name": "TPN Labs",
+    "email": "office@tpn-labs.com",
+    "url": "https://tpn-labs.com"
+  },
+  "homepage": "https://github.com/TPN-Labs/ClaudeSkills",
+  "repository": "https://github.com/TPN-Labs/ClaudeSkills",
+  "license": "MIT",
+  "keywords": ["skills", "tpn-labs", "workflow", "clarify", "dependabot"]
+}

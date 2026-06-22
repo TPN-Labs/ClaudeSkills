@@ -54,7 +54,39 @@ Each skill lives in its own folder under `skills/`. The folder name matches the 
 
 > **A note on trust.** Skills can include instructions and code that an agent will run. These are skills we use internally and share openly, but — as with any skill from any source — review a skill's contents before running it in your own environment.
 
-**Claude Code.** Copy a skill folder into your skills directory: `~/.claude/skills/` to make it available across all your projects, or `.claude/skills/` inside a single repository. Reload, then ask the agent to use it (for example: *"use the X skill to ..."*).
+**Claude Code.** Install the whole library as a **plugin**, so every skill is available as a `/` command in any project — no per-repo `.claude/` folder required.
+
+*Quick install (per user):*
+
+```
+/plugin marketplace add TPN-Labs/ClaudeSkills
+/plugin install tpn-labs-skills@tpn-labs
+```
+
+The skills then show up as `/clarify`, `/dependabot-pr-fixer`, and so on, across all your projects.
+
+*Auto-load (per user, no commands):* register the marketplace and enable the plugin in `~/.claude/settings.json`, and it loads on every launch:
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "tpn-labs": { "source": { "source": "github", "repo": "TPN-Labs/ClaudeSkills" } }
+  },
+  "enabledPlugins": { "tpn-labs-skills@tpn-labs": true }
+}
+```
+
+*Org-wide (admins):* put those same two keys in `managed-settings.json` to push the skills to everyone with zero per-machine setup — see [`examples/managed-settings.json`](examples/managed-settings.json). The file lives at:
+
+| OS | Path |
+| --- | --- |
+| macOS | `/Library/Application Support/ClaudeCode/managed-settings.json` |
+| Linux / WSL | `/etc/claude-code/managed-settings.json` |
+| Windows | `C:\ProgramData\ClaudeCode\managed-settings.json` |
+
+For Claude Code on the **web**, file-based managed settings don't reach the cloud container — push the plugin through your Team/Enterprise admin console ([server-managed settings](https://code.claude.com/docs/en/server-managed-settings)) instead.
+
+*Manual route:* or just copy a skill folder into `~/.claude/skills/` (all projects) or `.claude/skills/` (a single repository), reload, and ask the agent to use it (for example: *"use the clarify skill to ..."*).
 
 **Claude API.** Upload a skill through the Skills API and reference it in your requests; the model uses it automatically when relevant.
 
