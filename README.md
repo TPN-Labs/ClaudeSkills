@@ -46,7 +46,8 @@ Each skill lives in its own folder under `skills/`. The folder name matches the 
 
 | Skill | What it does | When to use it |
 | --- | --- | --- |
-| `clarify` | Interviews you with interactive multiple-choice questions until a plan or design is fully clarified | You want to stress-test, pin down, or clarify a plan before building — or you say "grill me", "clarify", "interview me", or "stress-test this" |
+| [`clarify`](skills/clarify/) | Interviews you with interactive multiple-choice questions until a plan or design is fully clarified | You want to stress-test, pin down, or clarify a plan before building — or you say "grill me", "clarify", "interview me", or "stress-test this" |
+| [`dependabot-pr-fixer`](skills/dependabot-pr-fixer/) | Diagnoses and fixes a failing Dependabot dependency-update PR, then pushes the fix to the PR's own branch — keeping the version bump intact. | When a Dependabot PR (npm/yarn/pnpm, pub, or GitHub Actions) is failing or needs work: point at it by URL or number and ask to fix it, make its checks pass, or "push to the same branch". |
 <!-- Add one row per skill. Keep the "when to use it" column specific — it mirrors the skill's description and helps both people and agents pick the right skill. -->
 
 ## Using these skills
