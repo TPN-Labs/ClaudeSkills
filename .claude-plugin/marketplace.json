@@ -1,0 +1,14 @@
+{
+  "name": "tpn-labs",
+  "owner": {
+    "name": "TPN Labs",
+    "email": "office@tpn-labs.com"
+  },
+  "plugins": [
+    {
+      "name": "tpn-labs-skills",
+      "source": "./",
+      "description": "Curated Agent Skills used day-to-day at TPN Labs — clarify, dependabot-pr-fixer, and more."
+    }
+  ]
+}
