@@ -1,5 +1,6 @@
 ---
 name: dependabot-pr-fixer
+argument-hint: "[pr-number-or-url]"
 description: Diagnose and fix failing Dependabot dependency-update pull requests, then push the fix to the PR's own branch without undoing the version bump. Use this whenever the user points at a Dependabot PR (by URL or number) and asks to fix it, make its checks pass, resolve the breakage from a version bump, or "push to the same branch" — including major-version bumps that need code migration, lockfile or peer-dependency conflicts, type and build errors, and pub or github-actions update PRs. Trigger even when the user just pastes a `dependabot/...` PR link with a terse "fix this", and whenever a dependency-bump branch needs to go green.
 ---
 
@@ -28,7 +29,7 @@ If `gh` isn't authenticated or the build can't be run, say so rather than guessi
 ## Procedure
 
 ### 1. Resolve the PR
-Accept a URL (`https://github.com/<owner>/<repo>/pull/<n>`) or a bare number. Derive `<owner>/<repo>` and the number. If only a number is given and the working directory is a clone, infer the repo from the remote.
+The PR reference arrives as **$ARGUMENTS** when the skill is invoked as a slash command — e.g. `/dependabot-pr-fixer 782` or `/dependabot-pr-fixer https://github.com/<owner>/<repo>/pull/782`. Accept either a URL (`https://github.com/<owner>/<repo>/pull/<n>`) or a bare number, and derive `<owner>/<repo>` and the number. If `$ARGUMENTS` is empty (the skill was triggered from the conversation rather than a slash command), use the Dependabot PR the user referenced; if there's none, ask which one to fix. If only a number is given and the working directory is a clone, infer the repo from the remote.
 
 ### 2. Check out the branch
 ```
