@@ -30,6 +30,7 @@ A skill can also bundle:
 .
 ├── README.md
 ├── LICENSE
+├── commands/           # useful SSH & shell commands (one .md per command)
 └── skills/
     ├── skill-name/
     │   ├── SKILL.md        # required: metadata + instructions
@@ -130,28 +131,9 @@ Before merging, confirm the skill does what its description claims and that any 
 
 ## Useful SSH & shell commands
 
-Handy commands and helpers we use day-to-day at TPN Labs. Add the shell functions to your `~/.zshrc` (or `~/.bashrc`) and reload your shell with `source ~/.zshrc`.
+Alongside skills, this repo collects handy commands and shell helpers we use day-to-day at TPN Labs in the [`commands/`](commands/) folder — one file per command, with usage notes and the snippet to copy into your `~/.zshrc` (or `~/.bashrc`).
 
-### `git-gone` — prune local branches whose remote is gone
-
-Deletes local branches whose upstream branch was removed on the remote (for example, after a PR is merged and its branch deleted). Run `git-gone` for a safe delete of fully-merged branches, or `git-gone -f` / `git-gone --force` to force-delete branches even if they aren't merged.
-
-```zsh
-git-gone() {
-  git fetch --prune
-  local flag="-d"
-  [[ "$1" == "-f" || "$1" == "--force" ]] && flag="-D"
-  local gone
-  gone=$(git branch -v | awk '/: gone]/ {print $1}')
-  if [[ -z "$gone" ]]; then
-    echo "No branches to prune."
-    return 0
-  fi
-  echo "$gone" | xargs -r git branch "$flag"
-}
-```
-
-<!-- Add one subsection per command: a short heading, what it does, and the snippet. -->
+See the [commands catalog](commands/README.md) for the full list (e.g. [`git-gone`](commands/git-gone.md), which prunes local branches whose remote branch was deleted). To add a new one, drop a `.md` file in `commands/` and add a row to that catalog.
 
 ## Learn more
 
