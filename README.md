@@ -30,6 +30,7 @@ A skill can also bundle:
 .
 ├── README.md
 ├── LICENSE
+├── commands/           # useful SSH & shell commands (one .md per command)
 └── skills/
     ├── skill-name/
     │   ├── SKILL.md        # required: metadata + instructions
@@ -127,6 +128,12 @@ Keep the instructions focused. If `SKILL.md` grows long, move detail into `refer
 5. Open a pull request for review.
 
 Before merging, confirm the skill does what its description claims and that any bundled scripts are safe to run.
+
+## Useful SSH & shell commands
+
+Alongside skills, this repo collects handy commands and shell helpers we use day-to-day at TPN Labs in the [`commands/`](commands/) folder — one file per command, with usage notes and the snippet to copy into your `~/.zshrc` (or `~/.bashrc`).
+
+See the [commands catalog](commands/README.md) for the full list (e.g. [`git-gone`](commands/git-gone.md), which prunes local branches whose remote branch was deleted). To add a new one, drop a `.md` file in `commands/` and add a row to that catalog.
 
 ## Learn more
 
