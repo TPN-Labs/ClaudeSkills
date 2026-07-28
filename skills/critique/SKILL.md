@@ -1,8 +1,8 @@
 ---
 name: critique
 model: sonnet
-argument-hint: "<PR-URL>"
-description: Use when the user asks to critique or review a pull request in any repository and passes its URL — "critique this PR", "/critique <PR-URL>", "review this PR". Runs a three-axis review of the PR diff (Standards, Spec, Policy & Docs) in parallel sub-agents, posts findings as inline review comments, and submits the review automatically without asking. Triggers on a GitHub PR link plus "critique" or "review".
+argument-hint: "[pr-url]"
+description: Use when the user asks to critique or review a pull request in any repository and passes its URL — "critique this PR", "/critique PR-URL", "review this PR". Runs a three-axis review of the PR diff (Standards, Spec, Policy & Docs) in parallel sub-agents, posts findings as inline review comments, and submits the review automatically without asking. Triggers on a GitHub PR link plus "critique" or "review".
 user-invocable: true
 ---
 
@@ -15,7 +15,7 @@ Nothing here is hardcoded to one project. Every standard, spec, and policy the r
 ## Invocation
 
 ```
-/critique <PR-URL>
+/critique PR-URL
 ```
 
 The **PR URL is a mandatory parameter** (e.g. `https://github.com/acme/widgets/pull/451`). It is the one thing this skill cannot run without — with no URL there is no diff to review and nowhere to post. If the user invoked the skill without a URL, **stop and ask for it**; do not guess a PR, fall back to a local branch, or review anything else. Once you have it, parse it into `owner` / `repo` / `pullNumber` for every GitHub MCP call.
@@ -67,7 +67,7 @@ Take the first that resolves, and **name which one you used** in the review body
 
 ### 3. Discover the standards, policy & ADR sources
 
-Fetch everything **at the PR's head SHA** (`get_file_contents` with `ref: <head-sha>`) — not from a local checkout, and not from the default branch: a PR that edits the conventions must be judged against its own version. List the repo root and `docs/` once, then fetch only what exists. **A file that isn't there is a source you drop, not a rule you infer.**
+Fetch everything **at the PR's head SHA** (`get_file_contents` with `ref: HEAD_SHA`) — not from a local checkout, and not from the default branch: a PR that edits the conventions must be judged against its own version. List the repo root and `docs/` once, then fetch only what exists. **A file that isn't there is a source you drop, not a rule you infer.**
 
 | Source | Try, in order | If absent |
 |---|---|---|
@@ -166,7 +166,7 @@ A repo's policy doc supersedes its conventions, so that axis is never folded int
 | Get the review diff | `pull_request_read` `get_diff` |
 | Changed files / commits | `pull_request_read` `get_files` / `get_commits` |
 | Check for your earlier or pending reviews | `pull_request_read` `get_reviews` |
-| Discover / read a standards, policy, or ADR file | `get_file_contents` (`ref: <head-sha>`) |
+| Discover / read a standards, policy, or ADR file | `get_file_contents` (`ref: HEAD_SHA`) |
 | Fetch acceptance criteria | Linear MCP `get_issue`, or `issue_read` for a GitHub issue |
 | Open a pending review | `pull_request_review_write` `method: create` (no `event`) |
 | Stage one inline comment | `add_comment_to_pending_review` (`path`, `line`, `side`, `subjectType`, `body`) |

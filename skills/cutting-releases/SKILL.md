@@ -1,5 +1,5 @@
 ---
-name: Cutting-Releases
+name: cutting-releases
 description: Use when cutting, publishing, or announcing a new release/version of AnunțReal for a deployment (dev or prod) — turning the work merged into main since the last release tag into a PM-friendly CHANGELOG entry, a GitHub release, and a Slack announcement, deploying to the target environment (dev is already live via merge; prod is dispatched here), moving the shipped Linear tickets to the right status, and listing the tickets shipped. Triggers include "cut a release", "release v1.1.x to dev/prod", "deploy to prod", "publish the changelog", "announce the release".
 user-invocable: true
 ---
