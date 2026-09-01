@@ -26,7 +26,7 @@ Every run targets one environment — pass it explicitly (`--env=dev` or `--env=
 | `--env` | Deploy action | Linear transition |
 |---|---|---|
 | `dev` | **None to dispatch.** Dev deploys automatically on merge to `main` (Coolify push trigger on `api/**` and `web/**`), so the current `main` is already live on dev. The release just documents it. | Move each shipped ticket → **Deployed in DEV**. |
-| `prod` | **Dispatch both prod deploys** — `api_deploy.yml` and `web_deploy.yml` via `workflow_dispatch` (prod Coolify UUID) — and watch each to green **before** the release is announced. | Find tickets currently in **Deployed in DEV** (intersected with this release's shipped set) and move them → **Done**. |
+| `prod` | **Dispatch both prod deploys** — `api_deploy.yml` and `web_deploy.yml` via `workflow_dispatch` (prod Coolify UUID) — and watch each to green **before** the release is announced. | Find tickets currently in **Deployed in DEV** (intersected with this release's shipped set) and move them → **In Testing**. |
 
 If the environment isn't given, ask — do not guess. It changes whether a prod deploy is dispatched, which tickets move, and where.
 
@@ -77,9 +77,10 @@ Default to **preview mode**. Only enter Publish on an explicit go-ahead for *the
    gh release create <version> --title "<version> — <headline>" --notes-file releases/<version>.md --target main
    ```
    (Use `--notes-file`; do not paste multi-line notes inline.)
-9. **Transition the Linear tickets** for the curated shipped set, using the Linear MCP (`get_issue` to read the current state, `save_issue`/`update_issue` to set the state by name). **Never move a ticket backward** — the workflow order is `Backlog → Todo → In Progress → In Review → Deployed in DEV → Done`:
-   - `--env=dev` → move each shipped ticket to **Deployed in DEV**, but **skip any already at or past it** (already Deployed in DEV, or already Done — don't regress a finished ticket).
-   - `--env=prod` → for each shipped ticket currently in **Deployed in DEV**, set state to **Done**. Skip (and report) tickets not in that state — don't force a Done on a ticket that never reached dev, and don't touch ones already Done.
+9. **Transition the Linear tickets** for the curated shipped set, using the Linear MCP (`get_issue` to read the current state, `save_issue`/`update_issue` to set the state by name). **Never move a ticket backward** — the workflow order is `Backlog → Todo → In Progress → In Review → Deployed in DEV → In Testing → Done`:
+   - `--env=dev` → move each shipped ticket to **Deployed in DEV**, but **skip any already at or past it** (already Deployed in DEV, In Testing, or Done — don't regress a ticket that's further along).
+   - `--env=prod` → for each shipped ticket currently in **Deployed in DEV**, set state to **In Testing**. Skip (and report) tickets not in that state — don't force an In Testing on a ticket that never reached dev, and don't touch ones already In Testing or Done.
+   **A release never sets a ticket to Done.** `In Testing` is where the release hands off: QA verifies on the deployed environment and a human closes the ticket to **Done** afterwards.
    Report every transition made and every one skipped, with the reason.
 10. **Post to Slack** via the Slack MCP tool `slack_send_message` to channel `C0BK4HXD4TD` with the approved message. (Use the MCP tool — no bot token needed.)
 11. **Report** the curated list of Linear tickets shipped (with links), their new statuses, and — for `--env=prod` — the deploy run URLs; for `--env=dev`, note that the current `main` is what's live.
@@ -92,12 +93,12 @@ Default to **preview mode**. Only enter Publish on an explicit go-ahead for *the
 | Verify collector logic | `node --test '.claude/skills/cutting-releases/scripts/*.test.mjs'` |
 | Verify draft vs real diff | Dispatch a Sonnet subagent on `git diff <base>..main` (see `references/diff-verification.md`) |
 | Confirm a ticket actually shipped | Linear MCP `get_issue ENG-XX` → check status |
-| Move ticket state | Linear MCP `save_issue`/`update_issue` → state `Deployed in DEV` (dev) or `Done` (prod) |
+| Move ticket state | Linear MCP `save_issue`/`update_issue` → state `Deployed in DEV` (dev) or `In Testing` (prod) |
 | Deploy prod (api + web) | `gh workflow run api_deploy.yml --ref main` · `gh workflow run web_deploy.yml --ref main` |
 | Wait for a deploy to finish | `gh run watch <run-id> --exit-status` |
 | Create the release | `gh release create <version> --notes-file releases/<version>.md --target main` |
 | Announce | Slack MCP `slack_send_message` → channel `C0BK4HXD4TD` |
-| Constants | Release channel `C0BK4HXD4TD` (`#anunt-real-ops`) · Linear workspace slug `tpn-labs`, team `Engineering` (prefix `ENG`) · states `Deployed in DEV`, `Done` |
+| Constants | Release channel `C0BK4HXD4TD` (`#anunt-real-ops`) · Linear workspace slug `tpn-labs`, team `Engineering` (prefix `ENG`) · states `Deployed in DEV` (dev), `In Testing` (prod) — `Done` is a human's call, never the release's |
 
 ## Common mistakes
 
@@ -105,7 +106,8 @@ Default to **preview mode**. Only enter Publish on an explicit go-ahead for *the
 - **Trusting commit names over the diff.** A commit says `fix: X` but the diff also quietly changed Y. Always run the Sonnet diff-verification step (step 3) before finalizing the changelog.
 - **Copying commit subjects into the changelog.** PMs don't read `feat(ENG-285): admin explorer UX — group sizes, compare page`. Translate to value: "Reviewers can now see at a glance why two listings were flagged as the same property." Collapse a multi-slice epic into one user-facing feature.
 - **Listing every referenced Linear ID as "shipped."** Curate against real status (step 4).
-- **Forcing a prod → Done on a ticket that never reached dev.** On `--env=prod`, only advance tickets already in **Deployed in DEV**; report the rest.
+- **Forcing a prod → In Testing on a ticket that never reached dev.** On `--env=prod`, only advance tickets already in **Deployed in DEV**; report the rest.
+- **Closing tickets to Done as part of the release.** A prod release moves tickets to **In Testing**, not Done — the work still has to be verified. Whoever tests it closes it.
 - **Announcing prod before the deploy finished green.** On `--env=prod`, dispatch `api_deploy.yml` + `web_deploy.yml`, `gh run watch` both to success, *then* create the release and post to Slack. A prod release that names a rollout that failed is worse than a late one.
 - **Assuming the changelog PR deploys anything.** It doesn't — the dev auto-deploy watches `api/**`/`web/**`, and prod is `workflow_dispatch` only. The rollout is step 6; the docs PR is separate.
 - **Moving Linear tickets before showing the drafts.** Linear transitions are outward-facing too — they're behind the same approval gate. See the hard rule above.
