@@ -116,14 +116,23 @@ Title:
 Date input not saved correctly due to locale mismatch
 ```
 
-Description:
+Description — note the blank line after every heading and between every block; that spacing is what makes it render in Linear:
 
 ```markdown
-**Environment:** Chrome 123, Windows 11, Test Env v2.1.0
-**Severity:** Major
-**Frequency:** Always
+## Environment
+
+Chrome 123, Windows 11, Test Env v2.1.0
+
+## Severity
+
+Major
+
+## Frequency
+
+Always
 
 ## Steps to Reproduce
+
 1. Set the browser locale to Romanian (`ro-RO`) and restart Chrome.
 2. Log in to Test Env v2.1.0 and open Settings → Profile.
 3. Enter `14.06.2025` in the Date of birth field.
@@ -131,20 +140,20 @@ Description:
 5. Reload the page.
 
 ## Expected
+
 Date remains as 14.06.2025.
 
 ## Actual
+
 Date shows as 06.14.2025.
 
 ## Notes
-API is receiving the date in MM/dd/yyyy regardless of input locale.
-Affects all non-US locale users.
+
+API is receiving the date in MM/dd/yyyy regardless of input locale. Affects all non-US locale users.
 
 ## Screenshot
-![Profile after reload showing 06.14.2025](https://…)
 
----
-Filed with Claude Code's `/file-a-bug` skill.
+![Profile after reload showing 06.14.2025](https://…)
 ```
 
 `save_issue` arguments:
