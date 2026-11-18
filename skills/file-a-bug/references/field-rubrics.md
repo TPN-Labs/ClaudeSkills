@@ -1,6 +1,6 @@
 # Field rubrics
 
-How to fill each field of a TPN bug ticket, the ready-made question panels, and one worked example end to end.
+How to fill each field of a TPN bug issue, the ready-made question panels, and one worked example end to end.
 
 ## Title formula
 
@@ -16,18 +16,18 @@ The title is read in a list of forty others. It has to say what is broken and wh
 | `Checkout total shows £0.00 for orders with a discount code` | `Checkout broken` | "Broken" is not a symptom |
 | `Avatar upload fails silently for PNGs over 5MB` | `Upload issue on profile page` | Names the area, not the failure |
 
-Avoid leading with the component (`[Profile] date wrong`) — Linear has labels and projects for that.
+Avoid leading with the component (`[Profile] date wrong`) — the repository and labels already say that.
 
 ## Severity ladder
 
 Severity is about **user pain**, not about how hard the fix looks. It is the reporter's call.
 
-| Severity | Linear `priority` | The test |
+| Severity | Priority field option (if the repo has one) | The test |
 |---|---|---|
-| **Blocker** | 1 — Urgent | The user cannot complete a core job at all, and there is no workaround. Data loss, corruption, a security exposure, or the build/env is down for everyone. |
-| **Major** | 2 — High | A core flow is broken or produces wrong data, but there is a workaround, or it hits a defined subset of users. *Wrong data shown to a user is Major at minimum — never Minor.* |
-| **Minor** | 3 — Medium | A secondary flow misbehaves, or the main flow is right but awkward. The user can finish the job unaided. |
-| **Trivial** | 4 — Low | Cosmetic: spacing, a typo, a misaligned icon, a wrong hover state. Nothing behaves wrongly. |
+| **Blocker** | Urgent | The user cannot complete a core job at all, and there is no workaround. Data loss, corruption, a security exposure, or the build/env is down for everyone. |
+| **Major** | High | A core flow is broken or produces wrong data, but there is a workaround, or it hits a defined subset of users. *Wrong data shown to a user is Major at minimum — never Minor.* |
+| **Minor** | Medium | A secondary flow misbehaves, or the main flow is right but awkward. The user can finish the job unaided. |
+| **Trivial** | Low | Cosmetic: spacing, a typo, a misaligned icon, a wrong hover state. Nothing behaves wrongly. |
 
 Two rules that settle most arguments:
 
@@ -84,15 +84,15 @@ options:
   - Seen once — Observed once, hasn't reproduced since
 ```
 
-**Project** — build the options from `list_projects`; never hardcode them.
+**Repository** — build the options from the repositories that plausibly own the behaviour (the one you are working in, ones named in the conversation, the org's repos for that product); never hardcode them.
 
 ```
-header:   "Project"
-question: "Which Linear project does this bug belong to? Every TPN bug ticket needs one."
-options:  <up to 4 plausible projects, name + one-line summary as the description>
+header:   "Repository"
+question: "Which GitHub repository should this bug be filed in? Every TPN bug issue needs one."
+options:  <up to 4 plausible repos, owner/repo + one-line summary as the description>
 ```
 
-If more than four are plausible, ask the narrowing question first (which product or client), then the project.
+If more than four are plausible, ask the narrowing question first (which product or client, frontend or backend), then the repository.
 
 ## Worked example
 
@@ -104,11 +104,11 @@ If more than four are plausible, ask the narrowing question first (which product
 
 **What is already answered:** Environment (partially — no versions), Frequency (Always), Expected, Actual, Screenshot (exists), and enough for a Title.
 
-**What is missing:** Project, Severity, exact versions, Steps, Notes.
+**What is missing:** Repository, Severity, exact versions, Steps, Notes.
 
-**One panel** (Project + Severity are independent), **one prose ask** ("Which Chrome/Windows/app versions, and the exact click path from a fresh login?").
+**One panel** (Repository + Severity are independent), **one prose ask** ("Which Chrome/Windows/app versions, and the exact click path from a fresh login?").
 
-**Resulting ticket**
+**Resulting issue**
 
 Title:
 
@@ -116,7 +116,7 @@ Title:
 Date input not saved correctly due to locale mismatch
 ```
 
-Description — note the blank line after every heading and between every block; that spacing is what makes it render in Linear:
+Body — note the blank line after every heading and between every block, and that it starts at the first heading, not at a fence:
 
 ```markdown
 ## Environment
@@ -156,17 +156,17 @@ API is receiving the date in MM/dd/yyyy regardless of input locale. Affects all 
 ![Profile after reload showing 06.14.2025](https://…)
 ```
 
-`save_issue` arguments:
+`issue_write` arguments (this org has a `Bug` issue type; with no such type, drop `type` and pass `"labels": ["bug"]` instead):
 
 ```json
 {
-  "team": "Engineering",
-  "project": "<id chosen by the reporter>",
+  "method": "create",
+  "owner": "<owner chosen by the reporter>",
+  "repo": "<repo chosen by the reporter>",
   "title": "Date input not saved correctly due to locale mismatch",
-  "description": "<the markdown above>",
-  "priority": 2,
-  "labels": ["Bug"]
+  "body": "<the markdown above>",
+  "type": "Bug"
 }
 ```
 
-Note what did **not** happen: no step was invented to pad the repro, severity came from the reporter rather than from a guess, and the project was chosen by a human before anything was created.
+Note what did **not** happen: no step was invented to pad the repro, severity came from the reporter rather than from a guess, and the repository was chosen by a human before anything was created.
